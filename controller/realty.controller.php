@@ -9,20 +9,9 @@ class RealtyController
 {
     public function __call($name, $arguments)
     {
-        die('404');
+        die("FUNCTION $name NOT FOUND");
     }
     
-    protected static function get_realty($id)
-    {
-        //Получение информации об изменяемой записи для передачи в начальные значения
-        $realty = new Realty($id);
-        if (!$realty->is_loaded())
-        {
-            die(ERROR_VIEW);
-        }
-        return $realty;
-    }
-
     public function realty_edit()
     {
         if (isset($_GET['id']))
@@ -62,9 +51,9 @@ class RealtyController
             if ($_POST['action'] === 'add_tag')
             {
                 $id = $_POST['id'];
+                $tag_id = $_POST['tag_id'];
                 $realty = new Realty($id);
-                $realty->relation_tag_id = $_POST['tag_id'];
-                if ($realty->realty_add_tag())
+                if ($realty->realty_add_tag($tag_id))
                 {
                     header("Location:index.php?cat=realty&view=edit&id={$id}");
                 }
@@ -76,9 +65,9 @@ class RealtyController
             if ($_POST['action'] === 'delete_tag')
             {
                 $id = $_POST['id'];
+                $relation_id = $_POST['relation_id'];
                 $realty = new Realty($id);
-                $realty->relation_id = $_POST['relation_id'];
-                if ($realty->realty_delete_tag())
+                if ($realty->realty_delete_tag($relation_id))
                 {
                     header("Location:index.php?cat=realty&view=edit&id={$id}");
                 }
@@ -88,14 +77,15 @@ class RealtyController
                 }
             }
         }
-        $realty = RealtyController::get_realty($id);
-        $walls = Wall::get_all();
-        $tags = RealtyTags::get_all();
+        $realty = new Realty($id);
+        $walls = Wall::all();
+        $walls = ArrayHelper::index($walls, 'id');
+        $tags = RealtyTags::all();
 
         //Получение всех связанных с квартирой тегов
-        $relation_tags = RealtyTags::get_realtion_tag($id);
-
-        return render("realty/edit", ['realty' => $realty, 'walls' => $walls, 'relation_tags' => $relation_tags, 'tags' => $tags]);
+        $relation_tags = RealtyTags::get_relation_tag($id);
+//        var_dump($relation_tags);
+        return render("realty/edit", ['realty' => $realty, 'wall' => $walls , 'relation_tags' => $relation_tags , 'tags' => $tags]); /*    , 'relation_tags' => $relation_tags , 'tags' => $tags  */
     }
 
     public function realty_delete()
@@ -109,7 +99,8 @@ class RealtyController
 
 //Проверка на пост запрос об удалении записи
         if (isset($_POST['action'])) {
-            if ($_POST['action'] === 'delete') {
+            if ($_POST['action'] === 'delete')
+            {
                 $id = $_POST['id'];
                 $realty = new Realty($id);
                 if ($realty->delete()) {
@@ -118,8 +109,10 @@ class RealtyController
                     die(ERROR_DELETE);
                 }
             }
+            else header('Location:index.php?cat=realty&view=index_and_add');
         }
-        $realty = RealtyController::get_realty($id);
+        $realty = new Realty($id);
+
         return render("realty/delete", ['realty' => $realty]);
     }
 
@@ -135,9 +128,11 @@ class RealtyController
             die();
         }
 //Получение информации об просматриваемой записи
-        $realty = RealtyController::get_realty($id);
-        $relation_tags = RealtyTags::get_realtion_tag($id);
-        return render("realty/preview", ['realty' => $realty, 'relation_tags' => $relation_tags]);
+
+
+        $realty = new Realty($id);
+        $relation_tags = RealtyTags::get_relation_tag($id);
+        return render("realty/preview", ['realty' => $realty, 'relation_tags' => $relation_tags ]);
     }
 
     public function realty_index_and_add()
@@ -157,19 +152,19 @@ class RealtyController
                 $result = $realty->add();
                 if ($result)
                 {
+//                    var_dump($result);
                     header("Location:index.php?cat=realty&view=index_and_add");
                     die();
                 }
                 else die(ERROR_CREATE);
             }
         }
-        //Запрашиваем все значения из таблицы Недвижимость, отсортированые по id
-        $realty = Realty::get_all_realty();
-
+        //Запрашиваем все значения из таблицы Недвижимость
+        $realty = Realty::all();
         //Запрашиваем все значения из таблицы Типы_Стен
-        $walls = Wall::get_all();
-
-        return render("realty/index", ['realty' => $realty, 'walls' => $walls]);
+        $walls = Wall::all();
+        $walls = ArrayHelper::index($walls, 'id');
+        return render("realty/index", ['realty' => $realty, 'wall' => $walls ]);
     }
     
     public function realty_group_by_wall()
@@ -186,7 +181,8 @@ class RealtyController
         $realty = Realty::load_wall_group($wall_id);
 
         //Запрашиваем все значения из таблицы Типы_Стен
-        $walls = Wall::get_all();
+        $walls = Wall::all();
+        $walls = ArrayHelper::index($walls, 'id');
 
         //Проверка на пост запрос о добавлении новой записи
         if (isset($_POST['action']))
@@ -232,7 +228,7 @@ class RealtyController
         $realty = Realty::load_tag_group($tag_id);
 
         //Запрашиваем все значения из таблицы Типы_Стен
-        $walls = Wall::get_all();
+        $walls = Wall::all();
 
         //Проверка на пост запрос о добавлении новой записи
         if (isset($_POST['action']))

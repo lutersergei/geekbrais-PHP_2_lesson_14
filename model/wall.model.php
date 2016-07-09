@@ -5,139 +5,47 @@
  * Date: 18.06.2016
  * Time: 22:30
  */
-class Wall
+class Wall extends Model
 {
-    /*______Поля класса_______*/
+    protected static $fields = array();
+    protected static $field_types = array();
     
-    private $id;
-    public $material;
-    public $description;
-    public $relations = [];
-
-    /*______Конструктор класса_____*/
-    
-    public function __construct($id = NULL)
+    public static function tableName()
     {
-        if ($id !== NULL)
+        return 'wall';
+    }
+
+    public static function className()
+    {
+        return 'Wall';
+    }
+
+    public static function all()
+    {
+        $result = parent::all();
+        $walls = Wall::get_wall_count();
+        $walls = ArrayHelper::index($walls, 'id');
+        foreach ($result as $k=>$value)
         {
-            $this->id = $id;
-            $this->get_wall();
+            $result[$k]->relations['count'] = $walls[$result[$k]->id]['relation_count'];
         }
+        return $result;
     }
 
-    /*______Перегрузка класса_____*/
-    
-    public function __set($name, $value)
+    public static function get_wall_count()
     {
-        if (mb_substr($name, 0, 9, 'utf-8') === 'relation_')
-        {
-            $field = mb_substr($name, 9, NULL, 'utf-8');
-            $this->relations[$field] = $value;
-        }
-    }
-
-    public function __get($name)
-    {
-        if ($name === 'id') return $this->id;
-        if (mb_substr($name, 0, 9, 'utf-8') === 'relation_')
-        {
-            $field = mb_substr($name, 9, NULL, 'utf-8');
-            if (isset($this->relations[$field]))
-            {
-                return $this->relations[$field];
-            }
-        }
-        return NULL;
-    }
-
-    /*______Методы класса_____*/
-
-    public function load($array = [])
-    {
-        foreach ($array as $item => $value)
-        {
-            $this->$item = $value;
-        }
-    }
-    
-    public function is_loaded()
-    {
-        return ($this->id !== NULL);
-    }
-    
-    public static function get_all()
-    {
-        global $link;
         $query = "
-SELECT `wall`.*, COUNT(`realty`.`realty_id`) AS `relation_count` 
+SELECT `wall`.*, COUNT(`realty`.`id`) AS `relation_count` 
 FROM `wall` 
 LEFT JOIN `realty` 
 ON `realty`.`wall_id` = `wall`.`id` 
 GROUP BY `wall`.`id`";
-        $data_result = mysqli_query($link, $query);
+        $data_result = mysqli_query(self::get_db(), $query);
         $walls = [];
         while ($row = mysqli_fetch_assoc($data_result)) {
-            $wall = new Wall();
-            $wall->load($row);
-            $walls[] = $wall;
+            $walls[] = $row;
         }
         return $walls;
     }
-
-    public function get_wall()
-    {
-        global $link;
-        $query = "
-SELECT `wall`.*, COUNT(`realty`.`realty_id`) AS `relation_count` 
-FROM `wall` 
-LEFT JOIN `realty` 
-ON `realty`.`wall_id` = `wall`.`id` 
-WHERE `wall`.`id` = '$this->id'";
-        $data_result = mysqli_query($link, $query);
-        if ($row = mysqli_fetch_assoc($data_result))
-        {
-            $this->load($row);
-            return true;
-        }
-        else
-        {
-            $this->id = NULL;
-            return false;
-        }
-    }
-
-    public function update()
-    {
-        global $link;
-        $query = "UPDATE `wall` 
-SET `material` = '$this->material', `description` = '$this->description' 
-WHERE `wall`.`id` = '$this->id'";
-        $data_result = mysqli_query($link, $query);
-        if ($data_result) return true;
-        else return false;
-    }
-
-    public function add()
-    {
-        global $link;
-        $query = <<<SQL
-INSERT INTO `wall` (`id`, `material`, `description`) VALUES (NULL, '$this->material', '$this->description');
-SQL;
-        $data_result = mysqli_query($link, $query);
-        if ($data_result) return true;
-        else return false;
-    }
-
-    public function delete()
-    {
-        global $link;
-        $query = "DELETE FROM `wall` WHERE `id` = '$this->id'";
-        $data_result = mysqli_query($link, $query);
-        if ($data_result)
-        {
-            $this->id = NULL;
-            return true;
-        }
-        else return false;
-    }
+    
 }

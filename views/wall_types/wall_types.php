@@ -1,6 +1,7 @@
 <!--системные переменные-->
 <?php
 $title="Материалы стен";
+//var_dump($walls);
 ?>
 
 <!-- Page Content -->
@@ -11,7 +12,7 @@ $title="Материалы стен";
                     <ol class="breadcrumb">
                         <li>Материалы стен</li>
                     </ol>
-                    <h1 class="page-header">Lesson_3</h1>
+                    <h1 class="page-header">Lesson_6</h1>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             Материалы стен
@@ -32,7 +33,7 @@ $title="Материалы стен";
                                     <?php foreach ($walls as $wall)
                                     {
                                         //Если недвижимость с таки материалом существует, то материал нельзя удалить и появляется ссылка на просмотр всех сущностей с таки материалом
-                                        if (($wall->relation_count)>0) {
+                                        if (($wall->count)>0) {
                                             $result="<a href=index.php?realty=wall&view=group_by_wall&wall_id={$wall->id}>{$wall->material}</a>";
                                             $disabled='disabled';
                                         }
@@ -44,7 +45,7 @@ $title="Материалы стен";
                                         echo <<<HTML
 <tr>
                                             <td>$result</td>
-                                            <td>{$wall->relation_count}</td>       
+                                            <td>{$wall->count}</td>       
                                             <td>
                                             <div class="btn-group" role="group">
                                             <a href="../index.php?cat=wall&view=preview&id={$wall->id}" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Просмотр</a>

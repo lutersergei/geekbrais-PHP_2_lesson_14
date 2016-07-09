@@ -7,7 +7,9 @@
  */
 
 require_once ('initial.php');
-require_once ('database_connection.php');
+//require_once ('database_connection.php'); //TODO DELETE
+require_once ('system/helpers/array.helper.php');
+require_once('system/model.class.php');
 require_once('model/wall.model.php');
 require_once('model/realty.model.php');
 require_once ('model/realty_tags.model.php');
@@ -41,4 +43,4 @@ $controller_object = new $controller_class_name();
 $result = $controller_object ->  $controller_function_name();
 if ($result) echo $result;
 
-mysqli_close($link);
+//mysqli_close($link);

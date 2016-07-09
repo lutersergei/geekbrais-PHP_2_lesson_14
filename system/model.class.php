@@ -26,10 +26,11 @@ class Model
         self::CREATE_FAILED
     );
 
+    protected static $behaviours = array();
     protected static $fields = array();
     protected static $field_types = array();
     protected static $db = NULL;
-
+    
     protected $is_loaded_from_db;
     protected $is_changed;
 
@@ -65,28 +66,46 @@ class Model
 
     public function __get($field)
     {
-        if ((!in_array($field,static::$fields))&&(!in_array($field,$this->get_relation_fields())))
+        if (isset($this->data[$field]))
+        {
+            return $this->data[$field];
+        }
+        else
+        {
+            if (isset($this->relations[$field]))
+            {
+                return $this->relations[$field];
+            }
+            else
+            {
+                if (in_array($field,array_keys(static::$behaviours)))
+                {
+                    $key = static::$behaviours[$field]['key'];
+                    if (static::$behaviours[$field]['type'] = 'one')
+                    {
+                        $class_name = static::$behaviours[$field]['class'];
+                        $value = new $class_name($this->$key);
+                    }
+                    else
+                    {
+                        $relation_key = static::$behaviours[$field]['relation_key'];
+                        $class_name = static::$behaviours[$field]['class'];
+                        $value = $class_name::all([$relation_key => $this->$key]);
+                    }
+
+                    return $this->relations[$field] = $value;
+
+                }
+            }
+
+        }
+        if (!(in_array($field,static::get_fields())))
         {
             return self::FIELD_NOT_EXIST;
         }
         else
         {
-            if (isset($this->data[$field]))
-            {
-                return $this->data[$field];
-            }
-            else
-            {
-                if (isset($this->relations[$field]))
-                {
-                    return $this->relations[$field];
-                }
-                else
-                {
-                    return NULL;
-                }
-
-            }
+            return NULL;
         }
     }
 
@@ -120,7 +139,14 @@ class Model
                 }
                 else
                 {
-                    return self::FIELD_NOT_EXIST;
+                    if (in_array($field,array_keys(static::$behaviours)))
+                    {
+                        $this->relations[$field] = $value;
+                    }
+                    else
+                    {
+                        return self::FIELD_NOT_EXIST;
+                    }
                 }
             }
         }
@@ -130,7 +156,7 @@ class Model
     {
         if (self::$db === NULL)
         {
-            include("db.php");
+            include("/../database_connection.php");
             self::$db = $link;
         }
         return self::$db;
@@ -267,7 +293,7 @@ class Model
     {
         foreach($data as $k => $v)
         {
-            if (!in_array($k,static::$fields))
+            if (!in_array($k, static::get_fields()))
             {
                 return self::FIELD_NOT_EXIST;
             }
@@ -279,22 +305,11 @@ class Model
         return true;
     }
 
-    public function load_relations($data = array())
-    {
-        foreach($data as $k => $v)
-        {
-
-            $this->relations[$k] = $v;
-
-        }
-        return true;
-    }
 
     public function one($id)
     {
         $query = "SELECT * FROM `".static::tableName()."` WHERE `id` = '{$id}'";
         $result = mysqli_query(self::get_db(),$query);
-
         if ($row = mysqli_fetch_assoc($result))
         {
             return $this->load($row);
@@ -305,11 +320,10 @@ class Model
         }
     }
 
-    public function edit()
+    public function update()
     {
         if ($this->id === NULL) return self::OBJECT_NOT_EXIST;
         $query = "UPDATE `".static::tableName()."` SET ".$this->update_query()." WHERE `id` = '$this->id'";
-
         $result = mysqli_query(self::get_db(),$query);
 
         if ($result)
@@ -326,7 +340,6 @@ class Model
     public function add()
     {
         if ($this->id !== NULL) return self::OBJECT_ALREADY_EXIST;
-
         $query = "INSERT INTO `".static::tableName()."` (".static::fields_query().") VALUES (".$this->values_query().")";
         $result = mysqli_query(self::get_db(),$query);
 
@@ -366,7 +379,6 @@ class Model
     {
         $query = "SELECT * FROM `".static::tableName()."` WHERE 1";
         $result = mysqli_query(self::get_db(),$query);
-
         $all = array();
         while ($row = mysqli_fetch_assoc($result))
         {
@@ -378,9 +390,6 @@ class Model
                 $all[] = $one;
             }
         }
-
         return $all;
     }
-
-
 }

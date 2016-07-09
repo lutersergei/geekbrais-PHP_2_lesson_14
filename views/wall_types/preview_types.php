@@ -3,9 +3,7 @@
 $disabled=false;
 $material=$wall->material;
 $description=$wall->description;
-$count=$wall->relation_count;
 $id = $wall->id;
-if ($count>0) $disabled='disabled';
 $title="Просмотр материала - $material";
 ?>
 <!-- Page Content -->
@@ -17,7 +15,7 @@ $title="Просмотр материала - $material";
                         <li><a href="../index.php?cat=wall&view=index_and_add">Материалы стен</a></li>
                         <li class="active">Просмотр материала</li>
                     </ol>
-                    <h1 class="page-header">Lesson_3</h1>
+                    <h1 class="page-header">Lesson_6</h1>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             Просмотр записи
@@ -30,7 +28,6 @@ $title="Просмотр материала - $material";
                                     <tr>
                                         <th>Материал</th>
                                         <th>Описание</th>
-                                        <th>Объектов недвижимости</th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -39,12 +36,10 @@ $title="Просмотр материала - $material";
                                     <?php echo <<<HTML
 <tr>
                                             <td>{$material}</td>                                           
-                                            <td>{$description}</td> 
-                                            <td>{$count}</td> 
+                                            <td>{$description}</td>
                                             <td>
                                             <div class="btn-group" role="group">
                                             <a href="../index.php?cat=wall&view=edit&id={$id}"  class="btn btn-default "><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Редактирование</a>
-                                            <a href="../index.php?cat=wall&view=delete&id={$id}" class="btn btn-default $disabled "><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Удаление</a>
                                             </div>
                                             </td>
                                             </tr>                                       

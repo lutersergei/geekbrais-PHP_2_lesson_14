@@ -1,5 +1,5 @@
 <?php
-$link = mysqli_connect("localhost", "root", "", "php2_lesson1");
+$link = mysqli_connect("localhost", "root", "", "php2_lesson6");
 
 /* проверка соединения */
 if (mysqli_connect_errno())

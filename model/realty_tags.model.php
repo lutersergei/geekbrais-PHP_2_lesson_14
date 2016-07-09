@@ -5,138 +5,59 @@
  * Date: 30.06.2016
  * Time: 13:30
  */
-class RealtyTags
+class RealtyTags extends Model
 {
-    /*______Поля класса_______*/
-
-    private $tag_id;
-    public $title;
-    public $relations = [];
-
-    /*______Конструктор класса_____*/
-
-    public function __construct($tag_id = NULL)
-    {
-        if ($tag_id !== NULL)
-        {
-            $this->tag_id = $tag_id;
-            $this->get_tag();
-        }
-    }
-
-    /*______Перегрузка класса_____*/
-
-    public function __set($name, $value)
-    {
-        if (mb_substr($name, 0, 9, 'utf-8') === 'relation_')
-        {
-            $field = mb_substr($name, 9, NULL, 'utf-8');
-            $this->relations[$field] = $value;
-        }
-    }
+    protected static $behaviours = [
+        'count' => []
+    ];
+    protected static $fields = array();
+    protected static $field_types = array();
     
-    public function __get($name)
+    public static function tableName()
     {
-        if ($name === 'tag_id') return $this->tag_id;
-        if (mb_substr($name, 0, 9, 'utf-8') === 'relation_')
+        return 'tags';
+    }
+
+    public static function className()
+    {
+        return 'RealtyTags';
+    }
+
+    public static function all()
+    {
+        $result = parent::all();
+        $count_tags = RealtyTags::get_count_tags();
+//        var_dump($count_tags);
+        $count_tags = ArrayHelper::index($count_tags, 'id');
+//        var_dump($count_tags);
+        foreach ($result as $k=>$value)
         {
-            $field = mb_substr($name, 9, NULL, 'utf-8');
-            if (isset($this->relations[$field]))
-            {
-                return $this->relations[$field];
-            }
+            $result[$k]->relations['count'] = $count_tags[$result[$k]->id]['relation_count'];
+//            var_dump($count_tags[$result[$k]->tag_id]['relation_count']);
         }
-        return NULL;
+        return $result;
     }
-    
-    /*______Методы класса_____*/
 
-    public function load($array = [])
+    public static function get_relation_tag($id)
     {
-        foreach ($array as $item => $value)
+        $query = "SELECT `realty_tags`.`id` AS `relation_id`, `tags`.* FROM `realty_tags` JOIN `tags` ON `tags`.`id`= `realty_tags`.`tag_id` WHERE `realty_tags`.`realty_id` = '$id'";
+        $result = mysqli_query(self::get_db(),$query);  
+        $tags = array();
+        while ($row = mysqli_fetch_assoc($result))
         {
-            $this->$item = $value;
-        }
-    }
-
-    public function is_loaded()
-    {
-        return ($this->tag_id !== NULL);
-    }
-
-    public static function get_all()
-    {
-        global $link;
-        $query = "SELECT `tags`.*, COUNT(`realty_tags`.`id`) AS `relation_count` FROM `tags` LEFT JOIN `realty_tags` ON `realty_tags`.`tag_id` = `tags`.`tag_id` GROUP BY `tags`.`tag_id`";
-        $data_result = mysqli_query($link, $query);
-        $tags = [];
-        while ($row = mysqli_fetch_assoc($data_result)) 
-        {
-            $tag = new RealtyTags();
-            $tag->load($row);
-            $tags[] = $tag;
+            $tags[] = $row;
         }
         return $tags;
     }
 
-    public function get_tag()
+    public static function get_count_tags()
     {
-        global $link;
-        $query = "SELECT `tags`.*, COUNT(`realty_tags`.`id`) AS `relation_count` FROM `tags` LEFT JOIN `realty_tags` ON `realty_tags`.`tag_id` = `tags`.`tag_id` WHERE `tags`.`tag_id` = '$this->tag_id' GROUP BY `tags`.`tag_id` ";
-        $data_result = mysqli_query($link, $query);
-        $tags = array();
-        if ($row = mysqli_fetch_assoc($data_result)) 
+        $query = "SELECT `tags`.`id`, COUNT(`realty_tags`.`id`) AS `relation_count` FROM `tags` LEFT JOIN `realty_tags` ON `realty_tags`.`tag_id` = `tags`.`id` GROUP BY `tags`.`id`";
+        $result = mysqli_query(self::get_db(),$query);
+        $tags = [];
+        while ($row = mysqli_fetch_assoc($result))
         {
-            $this->load($row);
-            return $tags;
-        } 
-        else 
-        {
-            $this->tag_id = NULL;
-            return false;
-        }
-    }
-
-    public function update()
-    {
-        global $link;
-        $query = "UPDATE `tags` SET `title` = '$this->title' WHERE `tags`.`tag_id` = '$this->tag_id'";
-        $data_result = mysqli_query($link, $query);
-        if ($data_result) return true;
-        else return false;
-    }
-
-    public function add()
-    {
-        global $link;
-        $query = <<<SQL
-INSERT INTO `tags` (`tag_id`, `title`) VALUES (NULL, '$this->title')
-SQL;
-        $data_result = mysqli_query($link, $query);
-        if ($data_result) return true;
-        else return false;
-    }
-
-    public function delete()
-    {
-        global $link;
-        $query = "DELETE FROM `tags` WHERE `tags`.`tag_id` = '$this->tag_id'";
-        $data_result = mysqli_query($link, $query);
-        if ($data_result) return true;
-        else return false;
-    }
-
-    public static function get_realtion_tag($realty_id)
-    {
-        global $link;
-        $query = "SELECT `realty_tags`.`id` AS `relation_id`, `tags`.* FROM `realty_tags` JOIN `tags` ON `tags`.`tag_id`= `realty_tags`.`tag_id` WHERE `realty_tags`.`realty_id` = '$realty_id'";
-        $data_result = mysqli_query($link, $query);
-        $tags = array();
-        while ($row = mysqli_fetch_assoc($data_result))
-        {
-            $tag = new RealtyTags();
-            $tag->load($row);
-            $tags[] = $tag;
+            $tags[] = $row;
         }
         return $tags;
     }

@@ -11,7 +11,7 @@ $title="Агентство недвижимости";
                         <ol class="breadcrumb">
                             <li>Список недвижимости и добавление</li>
                         </ol>
-                        <h1 class="page-header">Lesson_3</h1>
+                        <h1 class="page-header">Lesson_6</h1>
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 Недвижимость Красноярска
@@ -40,14 +40,14 @@ $title="Агентство недвижимости";
                                             <td>{$realty_one->rooms}</td>
                                             <td>{$realty_one->floor}</td>
                                             <td>{$realty_one->adress}</td>
-                                            <td>{$realty_one->relation_wall_material}</td>
+                                            <td>{$realty_one->wall->material}</td>
                                             <td>{$realty_one->area}</td>
                                             <td>{$realty_one->price}</td>                                          
                                             <td>
                                             <div class="btn-group" role="group">
-                                            <a href="index.php?cat=realty&view=preview&id={$realty_one->realty_id}" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Просмотр</a>
-                                            <a href="index.php?cat=realty&view=edit&id={$realty_one->realty_id}" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Редактирование</a>
-                                            <a href="index.php?cat=realty&view=delete&id={$realty_one->realty_id}" class="btn btn-default"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Удаление</a>
+                                            <a href="index.php?cat=realty&view=preview&id={$realty_one->id}" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Просмотр</a>
+                                            <a href="index.php?cat=realty&view=edit&id={$realty_one->id}" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Редактирование</a>
+                                            <a href="index.php?cat=realty&view=delete&id={$realty_one->id}" class="btn btn-default"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Удаление</a>
                                             </div>
                                             </td>
                                             </tr>
@@ -99,9 +99,10 @@ HTML;
                                         <div class="col-sm-2">
                                             <select id="material" name="material" class="form-control">
 
-<?php foreach ($walls as $wall) {
+<?php
+foreach ($wall as $w) {
     echo <<<HTML
-           <option value="{$wall->id}">{$wall->material}</option>
+           <option value="{$w->id}">{$w->material}</option>
 HTML;
 }     ?>                                      </select>
                                         </div>

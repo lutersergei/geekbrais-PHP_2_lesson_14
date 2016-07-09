@@ -1,6 +1,8 @@
 <!--системные переменные-->
 <?php
 $title="Список тегов";
+//var_dump($tags[0]->count['relation_count']);
+//var_dump($tags[0]->tag_id);
 ?>
 
 <!-- Page Content -->
@@ -11,7 +13,7 @@ $title="Список тегов";
                 <ol class="breadcrumb">
                     <li>Список тегов</li>
                 </ol>
-                <h1 class="page-header">Lesson_3</h1>
+                <h1 class="page-header">Lesson_6</h1>
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         Теги
@@ -32,8 +34,8 @@ $title="Список тегов";
                                 <?php foreach ($tags as $tag)
                                 {
                                     //Если недвижимость с таки материалом существует, то материал нельзя удалить и появляется ссылка на просмотр всех сущностей с таки материалом
-                                    if (($tag->relation_count)>0) {
-                                        $result="<a href=\"index.php?realty=wall&view=group_by_tag&tag_id={$tag->tag_id}\"><span class='glyphicon glyphicon-tag'></span> {$tag->title}</a>";
+                                    if (($tag->count)>0) {
+                                        $result="<a href=\"index.php?realty=wall&view=group_by_tag&tag_id={$tag->id}\"><span class='glyphicon glyphicon-tag'></span> {$tag->title}</a>";
                                         $disabled='disabled';
                                     }
                                     else
@@ -45,12 +47,11 @@ $title="Список тегов";
 <tr>
                                             
                                             <td>$result</td>  
-                                            <td>{$tag->relation_count}</td> 
+                                            <td>{$tag->count}</td> 
                                             <td>
                                             <div class="btn-group" role="group">
-                                            <a href="../index.php?cat=realty_tags&view=preview&id={$tag->tag_id}" class="btn btn-default"><span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> Просмотр</a>
-                                            <a href="../index.php?cat=realty_tags&view=edit&id={$tag->tag_id}" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Редактирование</a>
-                                            <a href="../index.php?cat=realty_tags&view=delete&id={$tag->tag_id}"  class="btn btn-default $disabled"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Удаление</a>
+                                            <a href="../index.php?cat=realty_tags&view=edit&id={$tag->id}" class="btn btn-default"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Редактирование</a>
+                                            <a href="../index.php?cat=realty_tags&view=delete&id={$tag->id}"  class="btn btn-default $disabled"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Удаление</a>
                                             </div>
                                             </td>
                                             </tr>

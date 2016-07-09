@@ -4,8 +4,8 @@ $title="Просмотр помещения";
 $rooms = $realty->rooms;
 $floor = $realty->floor;
 $adress = $realty->adress;
-$id = $realty->realty_id;
-$relation_wall_material = $realty->relation_wall_material;
+$id = $realty->id;
+$wall_material = $realty->wall->material;
 $area = $realty->area;
 $price = $realty->price;
 $description = $realty->description;
@@ -20,7 +20,7 @@ $description = $realty->description;
                         <li><a href="index.php?cat=realty&view=index_and_add">Список недвижимости и добавление</a></li>
                         <li class="active">Просмотр помещения</li>
                     </ol>
-                    <h1 class="page-header">Lesson_3</h1>
+                    <h1 class="page-header">Lesson_6</h1>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             Просмотр записи
@@ -48,7 +48,7 @@ $description = $realty->description;
                                             <td>{$rooms}</td>
                                             <td>{$floor}</td>
                                             <td>{$adress}</td>
-                                            <td>{$relation_wall_material}</td>
+                                            <td>{$wall_material}</td>
                                             <td>{$area}</td>
                                             <td>{$price}</td>
                                             <td>{$description}</td> 
@@ -87,7 +87,7 @@ HTML;
                                 foreach ($relation_tags as $t)
                                 {
                                     ?>
-                                    <li><a href="index.php?realty=wall&view=group_by_tag&tag_id=<?= $t->tag_id; ?>"><?= $t->title; ?></a></li>
+                                    <li><a href="index.php?realty=wall&view=group_by_tag&tag_id=<?= $t['id']; ?>"><?= $t['title']; ?></a></li>
                                     <?php
                                 }
                                 ?>

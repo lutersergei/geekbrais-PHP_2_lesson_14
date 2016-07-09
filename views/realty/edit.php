@@ -4,8 +4,7 @@ $title="Изменение помещения";
 $rooms = $realty->rooms;
 $floor = $realty->floor;
 $adress = $realty->adress;
-$id = $realty->realty_id;
-$material = $realty->relation_wall_material;
+$id = $realty->id;
 $area = $realty->area;
 $price = $realty->price;
 $description = $realty->description;
@@ -20,7 +19,7 @@ $description = $realty->description;
                         <li><a href="index.php?cat=realty&view=index_and_add">Список недвижимости и добавление</a></li>
                         <li class="active">Изменение помещения</li>
                     </ol>
-                    <h1 class="page-header">Lesson_3</h1>
+                    <h1 class="page-header">Lesson_6</h1>
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             Редактирование записи
@@ -39,6 +38,7 @@ $description = $realty->description;
                                         <th>Цена, <i class="fa fa-rub" aria-hidden="true"></i> </th>
                                         <th>Описание</th>
                                         <th></th>
+                                        <th></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -53,12 +53,12 @@ HTML;
 ?>
                                             <td>
                                                 <select id="material" name="material" class="form-control">
-                                                <?php foreach ($walls as $wall)
+                                                <?php foreach ($wall as $w)
                                                 {
                                                     $select=false;
-                                                    if ($realty->wall_id == $wall->id) $select="selected";
+                                                    if ($realty->wall_id == $w->id) $select="selected";
                                                     echo <<<HTML
-                                                    <option {$select} value="{$wall->id}">{$wall->material}</option>\n
+                                                    <option {$select} value="{$w->id}">{$w->material}</option>\n
 HTML;
                                                 }
 ?>                                              </select>
@@ -103,12 +103,12 @@ HTML;
 
                                             <?php foreach ($tags as $tag) {
                                                 echo <<<HTML
-           <option value="{$tag->tag_id}">{$tag->title}</option> \n
+           <option value="{$tag->id}">{$tag->title}</option> \n
 HTML;
                                             }     ?>                                      </select>
                                         <hr>
                                         <input type="hidden" name="action" value="add_tag">
-                                        <input type="hidden" name="id" value="<?= $realty->realty_id ?>">
+                                        <input type="hidden" name="id" value="<?= $realty->id ?>">
                                         <button type="submit" class="btn btn-default">Добавить</button>
                                     </form>
                                 </div>
@@ -120,8 +120,8 @@ HTML;
                                         <form style="display: inline" method="post">
                                             <input type="hidden" name="action" value="delete_tag"/>
                                             <input type="hidden" name="id" value="<?= $id ?>">
-                                            <input type="hidden" name="relation_id" value="<?= $t->relation_id ?>"/>
-                                            <button class="btn" style="display: inline"><?= $t->title; ?> <i class="fa fa-times"></i></button></form>
+                                            <input type="hidden" name="relation_id" value="<?= $t['relation_id'] ?>"/>
+                                            <button class="btn" style="display: inline"><?= $t['title'] ?> <i class="fa fa-times"></i></button></form>
                                         <?php
                                     }
                                     ?>
