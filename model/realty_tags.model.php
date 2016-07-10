@@ -32,7 +32,7 @@ class RealtyTags extends Model
 //        var_dump($count_tags);
         foreach ($result as $k=>$value)
         {
-            $result[$k]->relations['count'] = $count_tags[$result[$k]->id]['relation_count'];
+            $result[$k]->count = $count_tags[$result[$k]->id]['relation_count'];
 //            var_dump($count_tags[$result[$k]->tag_id]['relation_count']);
         }
         return $result;

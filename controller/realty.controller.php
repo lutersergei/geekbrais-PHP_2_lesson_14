@@ -16,7 +16,7 @@ class RealtyController
     {
         if (isset($_GET['id']))
         {
-            $id = $_GET['id'];
+            $id = (int) $_GET['id'];
         }
         else
         {
@@ -29,7 +29,7 @@ class RealtyController
         {
             if ($_POST['action'] === 'edit')
             {
-                $id = $_POST['id'];
+                $id = (int) $_POST['id'];
                 $realty = new Realty($id);
                 $realty->rooms = $_POST['rooms'];
                 $realty->floor = $_POST['floor'];
@@ -50,8 +50,8 @@ class RealtyController
             }
             if ($_POST['action'] === 'add_tag')
             {
-                $id = $_POST['id'];
-                $tag_id = $_POST['tag_id'];
+                $id =  (int) $_POST['id'];
+                $tag_id = (int)  $_POST['tag_id'];
                 $realty = new Realty($id);
                 if ($realty->realty_add_tag($tag_id))
                 {
@@ -64,8 +64,8 @@ class RealtyController
             }
             if ($_POST['action'] === 'delete_tag')
             {
-                $id = $_POST['id'];
-                $relation_id = $_POST['relation_id'];
+                $id = (int)  $_POST['id'];
+                $relation_id =  (int) $_POST['relation_id'];
                 $realty = new Realty($id);
                 if ($realty->realty_delete_tag($relation_id))
                 {
@@ -91,7 +91,7 @@ class RealtyController
     public function realty_delete()
     {
         if (isset($_GET['id'])) {
-            $id = $_GET['id'];
+            $id = (int) $_GET['id'];
         } else {
             header('Location:index.php?cat=realty&view=index_and_add');
             die();
@@ -101,7 +101,7 @@ class RealtyController
         if (isset($_POST['action'])) {
             if ($_POST['action'] === 'delete')
             {
-                $id = $_POST['id'];
+                $id = (int) $_POST['id'];
                 $realty = new Realty($id);
                 if ($realty->delete()) {
                     header('Location:index.php?cat=realty&view=index_and_add');
@@ -120,7 +120,7 @@ class RealtyController
     {
         if (isset($_GET['id']))
         {
-            $id = $_GET['id'];
+            $id =  (int) $_GET['id'];
         }
         else
         {
@@ -134,6 +134,7 @@ class RealtyController
         $relation_tags = RealtyTags::get_relation_tag($id);
         return render("realty/preview", ['realty' => $realty, 'relation_tags' => $relation_tags ]);
     }
+
 
     public function realty_index_and_add()
     {
@@ -160,7 +161,16 @@ class RealtyController
             }
         }
         //Запрашиваем все значения из таблицы Недвижимость
+//        $time_start = microtime(true);
+//        for ($i=1; $i<50000; $i++)
+//        {
+//            $hh = Realty::all();
+//        }
+//        var_dump($i);
         $realty = Realty::all();
+//        $time_end = microtime(true);
+//        $time = $time_end - $time_start;
+//        var_dump($time);
         //Запрашиваем все значения из таблицы Типы_Стен
         $walls = Wall::all();
         $walls = ArrayHelper::index($walls, 'id');
@@ -171,7 +181,7 @@ class RealtyController
     {
         if (isset($_GET['wall_id']))
         {
-            $wall_id = $_GET['wall_id'];
+            $wall_id = (int)  $_GET['wall_id'];
         }
         else
         {
@@ -218,7 +228,7 @@ class RealtyController
     {
         if (isset($_GET['tag_id']))
         {
-            $tag_id = $_GET['tag_id'];
+            $tag_id =  (int) $_GET['tag_id'];
         }
         else
         {

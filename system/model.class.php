@@ -30,13 +30,13 @@ class Model
     protected static $fields = array();
     protected static $field_types = array();
     protected static $db = NULL;
-    
+
     protected $is_loaded_from_db;
     protected $is_changed;
 
     protected $data = array();
     protected $relations = array();
-
+    
     public function __construct($id = NULL)
     {
         if (static::$fields === array())
@@ -111,7 +111,7 @@ class Model
 
     public function __set($field, $value)
     {
-        if ((!in_array($field,static::$fields))&&(!in_array($field,$this->get_relation_fields())))
+        if ((!in_array($field,static::$fields))&&(!in_array($field,$this->get_relation_fields()))&&(!in_array($field,array_keys(static::$behaviours))))
         {
             return self::FIELD_NOT_EXIST;
         }

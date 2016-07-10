@@ -72,7 +72,7 @@ class RealtyTagsController
         {
             if ($_POST['action'] === 'edit')
             {
-                $id = $_POST['id'];
+                $id = (int)  $_POST['id'];
                 $tag = new RealtyTags($id);
                 $tag->title = $_POST['title'];
                 if ($tag->update())
@@ -106,7 +106,7 @@ class RealtyTagsController
         if (isset($_POST['action'])) {
             if (($_POST['action'] === 'delete'))
             {
-                $id = $_POST['id'];
+                $id = (int) $_POST['id'];
                 $tag = new RealtyTags($id);
                 $tag->title = $_POST['title'];
                 if ($tag->delete())

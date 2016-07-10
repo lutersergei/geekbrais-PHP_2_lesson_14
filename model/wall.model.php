@@ -7,6 +7,10 @@
  */
 class Wall extends Model
 {
+    protected static $behaviours = [
+        'count' => []
+    ];
+
     protected static $fields = array();
     protected static $field_types = array();
     
@@ -28,6 +32,9 @@ class Wall extends Model
         foreach ($result as $k=>$value)
         {
             $result[$k]->relations['count'] = $walls[$result[$k]->id]['relation_count'];
+//            var_dump($result[$k]->relations['count']);
+//            var_dump($walls[$result[$k]->id]['relation_count']);
+//            var_dump($result[$k]->realtions);
         }
         return $result;
     }

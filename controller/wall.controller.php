@@ -28,7 +28,7 @@ class WallController
         if (isset($_POST['action'])) {
             if ($_POST['action'] === 'edit')
             {
-                $id = $_POST['id'];
+                $id = (int)  $_POST['id'];
                 $wall = new Wall($id);
                 $wall->material = $_POST['material'];
                 $wall->description = $_POST['description'];
@@ -65,7 +65,7 @@ class WallController
         {
             if (($_POST['action'] === 'delete'))
             {
-                $id = $_POST['id'];
+                $id = (int)  $_POST['id'];
                 $wall = new Wall($id);
                 if ($wall->delete())
                 {
@@ -109,18 +109,18 @@ class WallController
         //Проверка на пост запрос о добавлении новой записи
         if (isset($_POST['action'])) {
             if ($_POST['action'] === 'add') {
-                $id = $_POST['id'];
-                $wall = new Wall($id);
+                $wall = new Wall();
                 $wall->material = $_POST['material'];
                 $wall->description = $_POST['description'];
-                if ($wall->add())
+                if ($wall->add() === $wall::CREATE_FAILED)
                 {
-                    header('Location:index.php?cat=wall&view=index_and_add');
-                    die();
+                    die($wall::CREATE_FAILED); //TODO error page 404
+
                 }
                 else
                 {
-                    die(ERROR_CREATE);
+                    header('Location:index.php?cat=wall&view=index_and_add');
+                    die();
                 }
             }
         }
